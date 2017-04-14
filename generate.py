@@ -37,6 +37,7 @@ from rdoclient import RandomOrgClient
 
 # Try this first, and then use text file as failover
 WORDLIST_URL = 'https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt'
+# Note that this API key is not secure, and you should request your own!!!
 API_KEY = '59052bc4-840b-4923-96b7-90332167bc8c'
 CHARACTERS = 'abcdefghijklmnopqrstuvwxyz' \
              'ABCDEFGHIJKLMNOPQRSTUVWXYZ' \
