@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 Password Generator
 
@@ -24,6 +26,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+import os
+import pprint
+
+import click
+
 from urllib import request
 
 from rdoclient import RandomOrgClient
@@ -36,21 +43,11 @@ CHARACTERS = 'abcdefghijklmnopqrstuvwxyz' \
              '1234567890!@#$%^&*()_+=-?~'
 
 
-def roll_dice(number_rolls=5, number_dice=5, number_sides=6):
-    """
-    Get some randomness using random.org API: https://api.random.org
-    
-    :param number_sides: choose a die type and number of sides
-    :param number_rolls: how many rolls determines how long your password is
-    :param number_dice: how many dice do you want to roll
-    :return: string, concatenated numbers (consider list?)
-    # :return: list, rolled numbers
-    """
-    r = RandomOrgClient(API_KEY)
-
-    return r.generate_integers(number_rolls * number_dice, 0, number_sides)
-
-
+# 'click' is Python tool for making clean CLIs
+@click.command()
+@click.argument('data_type', required=True)
+# @click.option('--out-file', default='output.txt',
+#               help="Path and name to output file")
 def generate_password(number=1, data_type='words', length=20):
     """
     Function to generate the actual password or passphrase.
@@ -64,9 +61,52 @@ def generate_password(number=1, data_type='words', length=20):
 
     chars = CHARACTERS
 
+    # TODO -- figure out how to add args for dice in generate password function
+    # TODO -- figure out how to add args for dice in generate password function
+
+    number_list = roll_dice()
+
     if data_type == 'words':
         for line in request.urlopen(WORDLIST_URL):
             # print(line)
             pass
 
+    # print(number_list)
+
+    pprint.pprint(list(chunks(number_list, 5)))
+    # pprint.pprint([number_list[i:i + 5] for i in range(1, 6)])
+
     return r.generate_strings(number, length, chars)
+
+
+def roll_dice(number_rolls=5, number_dice=5, number_sides=6):
+    """
+    Get some randomness using random.org API: https://api.random.org
+
+    :param number_sides: choose a die type and number of sides
+    :param number_rolls: how many rolls determines how long your password is
+    :param number_dice: how many dice do you want to roll
+    :return: string, concatenated numbers (consider list?)
+    # :return: list, rolled numbers
+    """
+
+    r = RandomOrgClient(API_KEY)
+
+    return r.generate_integers(number_rolls * number_dice, 0, number_sides)
+
+
+def chunks(l, n):
+
+    """Yield successive n-sized chunks from l."""
+
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
+
+
+# main call to command line function
+if __name__ == '__main__':
+
+    generate_password()
+
+
+
