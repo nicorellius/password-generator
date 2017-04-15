@@ -47,37 +47,61 @@ CHARACTERS = 'abcdefghijklmnopqrstuvwxyz' \
 # 'click' is Python tool for making clean CLIs
 @click.command()
 @click.argument('data_type', required=True)
-# @click.option('--out-file', default='output.txt',
-#               help="Path and name to output file")
-def generate_password(number=1, data_type='words', length=20):
+@click.argument('password_length', required=True)
+@click.option('-n', '--number-rolls', default=5,
+              help="Number of times you want to roll the dice.")
+def generate_password(number_rolls, how_many=1, data_type='words',
+                      password_length=20):
     """
-    Function to generate the actual password or passphrase.
+    Generate a password or passphrase with either random characters, words,
+    or numbers. Optionally, choose number of dice rolls for passphrase
+    word selection. See https://www.eff.org/dice.\n
+    Returns unencrypted passphrase or password.
+    """
 
-    :param data_type: words, mixed, numbers
-    :param number: how many passwords do you want
-    :param length: default 20, enter number
-    :return: string, unencrypted password
-    """
-    r = RandomOrgClient(API_KEY)
+    # Keyword arguments:
+    #     data_type: words, mixed, numbers
+    #     how_many: how many passwords do you want
+    #     password_length: default 20, enter number
+
+    roc = RandomOrgClient(API_KEY)
 
     chars = CHARACTERS
+    tmp_length = password_length
+    factor = 1
+
+    if int(password_length) > 20:
+        remainder = int(password_length) % 20
+        factor = int(password_length) // 20
+        tmp_length = 20
+        print('temp length: {0}\nfactor: {1}\nremainder: {2}'.format(
+            tmp_length, 
+            factor,
+            remainder)
+        )
 
     # TODO -- figure out how to add args for dice in generate password function
     # TODO -- figure out how to add args for dice in generate password function
 
     number_list = roll_dice()
+    # print(number_list)
+    # pprint.pprint(list(chunks(number_list, number_rolls)))
+    # pprint.pprint([number_list[i:i + 5] for i in range(1, 6)])
 
     if data_type == 'words':
+
         for line in request.urlopen(WORDLIST_URL):
             # print(line)
             pass
 
-    # print(number_list)
+        print("This will eventually print passphrase")
 
-    pprint.pprint(list(chunks(number_list, 5)))
-    # pprint.pprint([number_list[i:i + 5] for i in range(1, 6)])
+    elif data_type == 'numbers':
+        chars = '1234567890'
 
-    return r.generate_strings(number, length, chars)
+    print(''.join(roc.generate_strings(factor * how_many,
+                                       tmp_length,
+                                       chars)))
 
 
 def roll_dice(number_rolls=5, number_dice=5, number_sides=6):
@@ -91,23 +115,24 @@ def roll_dice(number_rolls=5, number_dice=5, number_sides=6):
     # :return: list, rolled numbers
     """
 
-    r = RandomOrgClient(API_KEY)
+    roc = RandomOrgClient(API_KEY)
 
-    return r.generate_integers(number_rolls * number_dice, 0, number_sides)
+    return roc.generate_integers(number_rolls * number_dice, 0, number_sides)
 
 
-def chunks(l, n):
+def chunks(input_list, size):
 
-    """Yield successive n-sized chunks from l."""
+    """Yield successive n-sized chunks from input_list.
+    
+    :param input_list: list you want to chunk
+    :param size: size of chunks
+    """
 
-    for i in range(0, len(l), n):
-        yield l[i:i + n]
+    for i in range(0, len(input_list), size):
+        yield input_list[i:i + size]
 
 
 # main call to command line function
 if __name__ == '__main__':
 
     generate_password()
-
-
-
