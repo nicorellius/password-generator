@@ -3,6 +3,7 @@ Password Generator configuration
 """
 
 import os
+import logging
 
 DEBUG = True
 
@@ -31,4 +32,3 @@ CHARACTERS = 'abcdefghijklmnopqrstuvwxyz' \
 CLICK_CONTEXT_SETTINGS = {
     'help_options': dict(help_option_names=['-h', '--help'])
 }
-

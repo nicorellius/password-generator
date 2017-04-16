@@ -41,7 +41,13 @@ import util
 import config
 
 
-logging.basicConfig(format='%(levelname)s %(message)s', level=logging.DEBUG)
+# Set up logging configuration
+# TODO: set up proper logging app with handler, formatter, etc...
+logging.basicConfig(
+    # filename='output.log',
+    format='%(levelname)s %(message)s',
+    level=logging.DEBUG
+)
 
 
 # 'click' is Python tool for making clean CLIs
