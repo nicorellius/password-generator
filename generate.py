@@ -27,9 +27,6 @@ SOFTWARE.
 """
 
 import logging
-import pprint
-
-from collections import defaultdict
 
 import click
 
@@ -40,23 +37,23 @@ from rdoclient import RandomOrgClient
 
 import util
 
-logging.basicConfig(format='%(levelname)s %(message)s')
+# from config import PROJECT_ROOT
+from config import DEBUG
+from config import WORDLIST_LONG, WORDLIST_SHORT
+from config import API_KEY, CHARACTERS
 
-# Try this first, and then use text file as failover
-WORDLIST_URL = 'https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt'
-# Note that this API key is not secure, and you should request your own!!!
-API_KEY = '59052bc4-840b-4923-96b7-90332167bc8c'
-CHARACTERS = 'abcdefghijklmnopqrstuvwxyz' \
-             'ABCDEFGHIJKLMNOPQRSTUVWXYZ' \
-             '1234567890!@#$%^&*()_+=-?~'
+logging.basicConfig(format='%(levelname)s %(message)s')
 
 
 # 'click' is Python tool for making clean CLIs
 @click.command()
 @click.argument('data_type', required=True)
-@click.argument('password_length', required=True)
+@click.argument('how_many', required=False)
 @click.option('-n', '--number-rolls', default=5,
               help="Number of times you want to roll the dice.")
+@click.option('-l', '--password-length', default=20,
+              help="Password length: default 20. "
+                   "Enter number for `mixed` or `numbers` type.")
 def generate_password(number_rolls, how_many=1, data_type='words',
                       password_length=20):
     """
@@ -64,18 +61,20 @@ def generate_password(number_rolls, how_many=1, data_type='words',
     or numbers. Optionally, choose number of dice rolls for passphrase
     word selection. See https://www.eff.org/dice.\n
     Returns unencrypted passphrase or password.
+    
+    \b
+    Keyword arguments:
+        data_type: words, mixed, numbers
+        how_many: how many passwords do you want
     """
-
-    # Keyword arguments:
-    #     data_type: words, mixed, numbers
-    #     how_many: how many passwords do you want
-    #     password_length: default 20, enter number
 
     roc = RandomOrgClient(API_KEY)
 
     chars = CHARACTERS
     tmp_length = password_length
     factor = 1
+
+    number_rolls = validate_count(number_rolls)
 
     if int(password_length) > 20:
 
@@ -93,18 +92,33 @@ def generate_password(number_rolls, how_many=1, data_type='words',
 
     number_list = roll_dice()
     chunked_list = list(chunks(number_list, number_rolls))
-    pprint.pprint(chunked_list)
+
+    if DEBUG is True:
+        import pprint
+        pprint.pprint(chunked_list)
 
     if data_type == 'words':
+
+        if number_rolls == 4:
+            word_list = WORDLIST_SHORT
+
+        else:
+            word_list = WORDLIST_LONG
+
         try:
             # Initialize list, dict, and variable
             super_list = []
             super_dict = {}
             passphrase = ''
 
-            for line in request.urlopen(WORDLIST_URL):
+            # with open(word_list, 'r') as words:
+            #     lines = words.readlines()
+            #     for line in lines:
+
+            for line in request.urlopen(word_list):
+
                 l = line.decode()
-                d = {int(l.split('\t')[0]): l.split('\t')[1].strip('\n')}
+                d = {int(l.split('\t')[0]):l.split('\t')[1].strip('\n')}
                 super_list.append(d)
 
             for k in set(k for d in super_list for k in d):
@@ -141,7 +155,6 @@ def roll_dice(number_rolls=5, number_dice=5, number_sides=6):
     :param number_rolls: how many rolls determines how long your password is
     :param number_dice: how many dice do you want to roll
     :return: string, concatenated numbers (consider list?)
-    # :return: list, rolled numbers
     """
 
     roc = RandomOrgClient(API_KEY)
@@ -159,6 +172,17 @@ def chunks(input_list, size):
 
     for i in range(0, len(input_list), size):
         yield input_list[i:i + size]
+
+
+def validate_count(value):
+
+    # Use `set` ({x, y, z}) here for quickest result
+    if value not in {4, 5}:
+        raise click.BadParameter(
+            'Word list limitation means that dice rolls can only be 4 or 5.'
+        )
+
+    return value
 
 
 # main call to command line function
