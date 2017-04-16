@@ -4,7 +4,7 @@ Password Generator configuration
 
 import os
 
-DEBUG = False
+DEBUG = True
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -26,3 +26,9 @@ API_KEY = '59052bc4-840b-4923-96b7-90332167bc8c'
 CHARACTERS = 'abcdefghijklmnopqrstuvwxyz' \
              'ABCDEFGHIJKLMNOPQRSTUVWXYZ' \
              '1234567890!@#$%^&*()_+=-?~'
+
+# `click` options
+CLICK_CONTEXT_SETTINGS = {
+    'help_options': dict(help_option_names=['-h', '--help'])
+}
+

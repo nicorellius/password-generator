@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 """
-Password Generator
+Dice Roll Optional, Mostly-Random Word, Number, and Mixed Password Generator
+
+[[...DROMoR WoNuM PaG...]]
 
 MIT License
 
@@ -28,8 +30,6 @@ SOFTWARE.
 
 import logging
 
-from itertools import repeat
-
 import click
 
 from urllib import request
@@ -38,17 +38,14 @@ from urllib.error import HTTPError
 from rdoclient import RandomOrgClient
 
 import util
+import config
 
-# from config import PROJECT_ROOT
-from config import DEBUG
-from config import WORDLIST_LONG, WORDLIST_SHORT
-from config import API_KEY, CHARACTERS
 
-logging.basicConfig(format='%(levelname)s %(message)s')
+logging.basicConfig(format='%(levelname)s %(message)s', level=logging.DEBUG)
 
 
 # 'click' is Python tool for making clean CLIs
-@click.command()
+@click.command(context_settings=config.CLICK_CONTEXT_SETTINGS['help_options'])
 @click.argument('data_type', required=True)
 @click.argument('how_many', required=False, default=1)
 @click.option('-n', '--number-rolls', default=5,
@@ -70,9 +67,9 @@ def generate_password(number_rolls, how_many=1, data_type='words',
         how_many: how many passwords do you want
     """
 
-    roc = RandomOrgClient(API_KEY)
+    roc = RandomOrgClient(config.API_KEY)
 
-    chars = CHARACTERS
+    chars = config.CHARACTERS
     tmp_length = password_length
     factor = 1
 
@@ -84,28 +81,32 @@ def generate_password(number_rolls, how_many=1, data_type='words',
         factor = int(password_length) // 20
         tmp_length = 20
 
-        print('temp length: {0}\nfactor: {1}\nremainder: {2}'.format(
-            tmp_length,
-            factor,
-            remainder)
-        )
+        if config.DEBUG:
+            logging.info(
+                '[{0}] \ntemp length: {1}\nfactor: {2}\nremainder: {3}'.format(
+                    util.get_timestamp(),
+                    tmp_length,
+                    factor,
+                    remainder
+                    )
+                )
 
         # TODO -- Append `remainder` worth characters onto password
 
     number_list = roll_dice()
     chunked_list = list(chunks(number_list, number_rolls))
 
-    if DEBUG is True:
+    if config.DEBUG is True:
         import pprint
         pprint.pprint(chunked_list)
 
     if data_type == 'words':
 
         if number_rolls == 4:
-            word_list = WORDLIST_SHORT
+            word_list = config.WORDLIST_SHORT
 
         else:
-            word_list = WORDLIST_LONG
+            word_list = config.WORDLIST_LONG
 
         try:
             # Initialize list, dict, and variable
@@ -132,7 +133,7 @@ def generate_password(number_rolls, how_many=1, data_type='words',
                 n = int(''.join(map(str, chunk)))
                 passphrase += '{0} '.format(super_dict[n])
 
-            print(passphrase)
+            print('Your passphrase is: {0}'.format(passphrase))
 
         except HTTPError as e:
             logging.error('[{0}] {1}'.format(util.get_timestamp(), e))
@@ -146,9 +147,11 @@ def generate_password(number_rolls, how_many=1, data_type='words',
                                                chars)) + '\n')
 
     else:
-        print(''.join(roc.generate_strings(factor * how_many,
-                                           tmp_length,
-                                           chars)))
+        print('Your password is: {0}'.format(''.join(roc.generate_strings(
+            factor * how_many,
+            tmp_length,
+            chars)))
+        )
 
 
 def roll_dice(number_rolls=5, number_dice=5, number_sides=6):
@@ -161,7 +164,7 @@ def roll_dice(number_rolls=5, number_dice=5, number_sides=6):
     :return: string, concatenated numbers (consider list?)
     """
 
-    roc = RandomOrgClient(API_KEY)
+    roc = RandomOrgClient(config.API_KEY)
 
     return roc.generate_integers(number_rolls * number_dice, 1, number_sides)
 
