@@ -28,6 +28,8 @@ SOFTWARE.
 
 import logging
 
+from itertools import repeat
+
 import click
 
 from urllib import request
@@ -48,7 +50,7 @@ logging.basicConfig(format='%(levelname)s %(message)s')
 # 'click' is Python tool for making clean CLIs
 @click.command()
 @click.argument('data_type', required=True)
-@click.argument('how_many', required=False)
+@click.argument('how_many', required=False, default=1)
 @click.option('-n', '--number-rolls', default=5,
               help="Number of times you want to roll the dice.")
 @click.option('-l', '--password-length', default=20,
@@ -118,7 +120,7 @@ def generate_password(number_rolls, how_many=1, data_type='words',
             for line in request.urlopen(word_list):
 
                 l = line.decode()
-                d = {int(l.split('\t')[0]):l.split('\t')[1].strip('\n')}
+                d = {int(l.split('\t')[0]): l.split('\t')[1].strip('\n')}
                 super_list.append(d)
 
             for k in set(k for d in super_list for k in d):
@@ -137,9 +139,11 @@ def generate_password(number_rolls, how_many=1, data_type='words',
 
     elif data_type == 'numbers':
         chars = '1234567890'
-        print(''.join(roc.generate_strings(factor * how_many,
-                                           tmp_length,
-                                           chars)))
+
+        for _ in range(0, how_many):
+            print(''.join(roc.generate_strings(factor * how_many,
+                                               tmp_length,
+                                               chars)) + '\n')
 
     else:
         print(''.join(roc.generate_strings(factor * how_many,
@@ -185,7 +189,7 @@ def validate_count(value):
     return value
 
 
-# main call to command line function
+# Main call to command line function
 if __name__ == '__main__':
 
     generate_password()
