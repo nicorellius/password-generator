@@ -9,14 +9,14 @@ DEBUG = True
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-# Word lists locally from EFF:
+# Word lists from EFF:
 #     https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases
+#
+# Local files
 # WORDLIST_LONG = 'word_lists/wordlist_long.txt'
 # WORDLIST_SHORT = 'word_lists/wordlist_short.txt'
 
-# Word lists remotely from EFF:
-#     https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases
-
+# Remote files:
 # https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt
 WORDLIST_LONG = 'http://bit.ly/2mtdxEk'
 # https://www.eff.org/files/2016/09/08/eff_short_wordlist_2_0.txt
@@ -28,7 +28,7 @@ CHARACTERS = 'abcdefghijklmnopqrstuvwxyz' \
              'ABCDEFGHIJKLMNOPQRSTUVWXYZ' \
              '1234567890!@#$%^&*()_+=-?~'
 
-# `click` options
+# CLI (`click`) options
 CLICK_CONTEXT_SETTINGS = {
     'help_options': dict(help_option_names=['-h', '--help'])
 }
