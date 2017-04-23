@@ -4,14 +4,14 @@ Write some tests!
 
 import pytest
 
-from rdoclient import RandomOrgClient
-
 from scripts.generate import generate_password
 from scripts.generate import (
     _chunks, _validate_count, _roll_dice, _concatenate_remainder
 )
 
 import config
+
+from utils import get_roc
 
 
 # ========== simple add function for sanity check ==========
@@ -26,30 +26,14 @@ def test_add_function_pass():
 # ==========================================================
 
 
-def get_roc(api_key):
-    """
-    Get instance of RandomOrgClient for testing.
-
-    :param api_key: API key to fetch API client
-    :return: instance of ROC
-    """
-
-    try:
-        return RandomOrgClient(api_key=config.API_KEY)
-
-    except (ValueError, AttributeError) as e:
-        print(e)
-
-    finally:
-        print('API key {0} not working...'.format(api_key))
-        raise ValueError
-
-
 def test__concatenate_remainder():
 
-    pw_length = _concatenate_remainder(get_roc, config.CHARACTERS, 20)
+    roc = get_roc(config.API_KEY)
+    chars = config.CHARACTERS
 
-    assert pw_length is not None
+    tmp_pw = _concatenate_remainder(roc, chars, 20)
+
+    assert tmp_pw is not None
 
 
 @pytest.mark.xfail
