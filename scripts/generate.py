@@ -105,67 +105,82 @@ def generate_password(number_rolls=5, number_dice=5,
 
         chunked_list = _prepare_chunks(number_rolls, number_dice)
 
-        try:
-            # Initialize list, dict, and variable
-            super_list = []
-            super_dict = {}
-            passphrase = ''
-
-            # with open(word_list, 'r') as words:
-            #     lines = words.readlines()
-            #     for line in lines:
-
-            for line in request.urlopen(word_list):
-
-                # Take word list and break apart into list
-                l = line.decode()
-                d = {int(l.split('\t')[0]): l.split('\t')[1].strip('\n')}
-                super_list.append(d)
-
-            # Convert list into str and int components
-            for k in set(k for d in super_list for k in d):
-                for d in super_list:
-                    if k in d:
-                        super_dict[k] = d[k]
-
-            # Extract the int per roll and map to words for passphrase
-            for chunk in chunked_list:
-                n = int(''.join(map(str, chunk)))
-                passphrase += '{0} '.format(super_dict[n])
-
-            result = passphrase
-            password_length = 20
-
-        except HTTPError as e:
-            logging.error('[{0}] {1}'.format(utils.get_timestamp(), e))
+        result, password_length = _match_numbers_words(word_list, chunked_list)
 
     elif output_type == 'numbers':
-        click.echo(output_type)
         chars = '1234567890'
+
+        logging.info(
+            '[{0}] Output type `numbers` selected...'.format(
+                utils.get_timestamp())
+        )
 
     else:
         logging.info(
             '[{0}] Output type `mixed` selected...'.format(
                 utils.get_timestamp())
         )
-        click.echo(chars)
 
-    if password_length < 20:
-        result = ''.join(roc.generate_strings(factor * how_many,
-                                              password_length, chars))
+    if output_type != 'words':
+        
+        if password_length <= 20:
+            result = ''.join(roc.generate_strings(factor * how_many,
+                                                  password_length, chars))
 
-    elif password_length > 20:
-        result = _concatenate_remainder(roc, chars, password_length,
-                                        how_many, api_max_length)
+        elif password_length > 20:
+            result = _concatenate_remainder(roc, chars, password_length,
+                                            how_many, api_max_length)
 
     else:
-        # TODO: pull out words into function so we can return result/passphrase
         result = result
 
     click.echo('\nYour password is: {0}'.format(result))
 
 
-# TODO: refactor words type into function
+def _match_numbers_words(wd_list, ch_list):
+    """
+    Match numbers from dice rolls to word list.
+    
+    :param wd_list: word list
+    :param ch_list: chunked lists of numbers for dice rolls
+    :return: passphrase and length
+    """
+
+    # Initialize list, dict, and empty passphrase
+    password_length = 0
+    super_list = []
+    super_dict = {}
+    passphrase = ''
+
+    try:
+        # TODO: Refactor to accept local word lists
+        # with open(word_list, 'r') as words:
+        #     lines = words.readlines()
+        #     for line in lines:
+
+        for line in request.urlopen(wd_list):
+            # Take word list and break apart into list
+            l = line.decode()
+            d = {int(l.split('\t')[0]): l.split('\t')[1].strip('\n')}
+            super_list.append(d)
+
+    except HTTPError as e:
+        logging.error('[{0}] {1}'.format(utils.get_timestamp(), e))
+
+    # Convert list into str and int components
+    for k in set(k for d in super_list for k in d):
+        for d in super_list:
+            if k in d:
+                super_dict[k] = d[k]
+
+    # Extract the int per roll and map to words for passphrase
+    for chunk in ch_list:
+        n = int(''.join(map(str, chunk)))
+        passphrase += '{0} '.format(super_dict[n])
+
+    return passphrase, password_length
+
+
 def _prepare_chunks(number_rolls, number_dice):
 
     number_list = _roll_dice(number_rolls, number_dice)
@@ -186,42 +201,41 @@ def _concatenate_remainder(roc, chars, pw_len,
     API limitation is 20 character string, so if CLI input is longer
     than 20 characters, we must concatenate the string in size of reminder.
 
-    :param roc:
-    :param chars:
-    :param pw_len:
-    :param how_many:
-    :param max_length:
+    :param roc: instance of RandomOrgClient
+    :param chars: character set to use for making secret
+    :param pw_len: length of output (password)
+    :param how_many: how many passwords do you want
+    :param max_length: maximum default length, API imposed
     :return: concatenated string
     """
 
-    # TODO: This tmp, tmp2 method is only good for 40 chracters
+    # TODO: Current bug, throws error from API on 40, 60, 80, 100 ...
+    remainder_str, factor_str = '', ''
 
-    tmp, tmp2 = '', ''
+    # TODO: why int is required in outer scope?
+    factor = pw_len // 20  # old version was factor = int(pw_len) // 20
+    remainder = pw_len % 20  # old version was factor = int(pw_len) % 20
 
+    if config.DEBUG:
+        logging.info(
+            '[{0}] factor: {1}, remainder: {2}'.format(
+                utils.get_timestamp(), factor, remainder)
+        )
+
+    # Generate string in length equal to remainder
     if pw_len > 20:
+        if remainder == 0:
+            remainder_str = ''
+        else:
+            remainder_str = ''.join(roc.generate_strings(how_many,
+                                                         remainder, chars))
 
-        # TODO: why int is required in outer scope?
-        factor = pw_len // 20  # old version was factor = int(pw_len) // 20
-        remainder = pw_len % 20  # old version was factor = int(pw_len) % 20
+    # Multiply factor by how_many to get multiple strings
+    factor_str = ''.join(roc.generate_strings(factor * how_many,
+                                              max_length, chars))
 
-        if config.DEBUG:
-            logging.info(
-                '[{0}] factor: {1}, remainder: {2}'.format(
-                    utils.get_timestamp(),
-                    factor,
-                    remainder
-                    )
-                )
-
-        # if factor > 1:
-        tmp = ''.join(roc.generate_strings(how_many, remainder, chars))
-
-        # tmp2 = None
-
-    # for _ in range(0, how_many):
-    tmp2 = ''.join(roc.generate_strings(how_many, max_length, chars))
-
-    return '{0}{1}'.format(tmp, tmp2)
+    # Build the concatenated string and return it
+    return '{0}{1}'.format(remainder_str, factor_str)
 
 
 def _roll_dice(number_rolls=5, number_dice=5, number_sides=6):
