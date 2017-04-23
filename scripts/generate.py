@@ -35,8 +35,6 @@ import click
 from urllib import request
 from urllib.error import HTTPError
 
-from rdoclient import RandomOrgClient
-
 import utils
 import config
 
@@ -81,18 +79,14 @@ def generate_password(number_rolls, number_dice,
         password_length: (optional) length of output type
     """
 
-    roc = "Not connected to Random.org API client..."
+    # roc = "Not connected to Random.org API client..."
     chars = config.CHARACTERS
 
     factor = 1
     api_max_length = 20
     result = []
 
-    try:
-        roc = RandomOrgClient(config.API_KEY)
-
-    except (ValueError, AttributeError) as e:
-        print(e)
+    roc = utils.get_roc()
 
     if output_type == 'words':
 
@@ -106,7 +100,7 @@ def generate_password(number_rolls, number_dice,
             logging.info(
                 '[{0}] Using long word list...'.format(utils.get_timestamp()))
 
-        chunked_list = _prepare_chunks(number_rolls)
+        chunked_list = _prepare_chunks(number_rolls, number_dice)
 
         try:
             # Initialize list, dict, and variable
@@ -166,9 +160,9 @@ def generate_password(number_rolls, number_dice,
 
 
 # TODO: refactor words type into function
-def _prepare_chunks(number_rolls):
+def _prepare_chunks(number_rolls, number_dice):
 
-    number_list = _roll_dice(number_rolls)
+    number_list = _roll_dice(number_rolls, number_dice)
     number_rolls = _validate_count(number_rolls)
     chunks = list(_chunks(number_list, number_rolls))
 
@@ -235,7 +229,7 @@ def _roll_dice(number_rolls=5, number_dice=5, number_sides=6):
     """
 
     try:
-        roc = RandomOrgClient(config.API_KEY)
+        roc = utils.get_roc()
         return roc.generate_integers(number_rolls * number_dice, 1,
                                      number_sides)
 
