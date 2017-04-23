@@ -1,5 +1,7 @@
 # password-generator
-Random Dice-Roll Secure-Password Generator
+Dice Roll Optional, Mostly-Random Word, Number, and Mixed Password Generator
+
+`[[...DROMoR WoNuM PaG...]]`
 
 Thanks to EFF for their short and long word lists:
 
