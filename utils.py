@@ -4,9 +4,11 @@ import random
 import hashlib
 # import binascii
 import datetime
-
-
 import uuid
+
+from rdoclient import RandomOrgClient
+
+import config
 
 
 # get time in format I like
@@ -62,3 +64,19 @@ def hash_password(password, salt_length=16, iterations=1000000, encoding='utf-8'
     # return binascii.hexlify(hashed_password)
     # Bytes version
     return hashed_password
+
+
+def get_roc(api_key=config.API_KEY):
+    """
+    Get instance of RandomOrgClient for testing.
+
+    :param api_key: API key to fetch API client
+    :return: instance of ROC
+    """
+
+    try:
+        roc = RandomOrgClient(api_key)
+        return roc
+
+    except (ValueError, AttributeError) as e:
+        print(e)
