@@ -30,10 +30,10 @@ SOFTWARE.
 
 import logging
 
-import click
-
 from urllib import request
 from urllib.error import HTTPError
+
+import click
 
 import utils
 import config
@@ -51,15 +51,15 @@ logging.basicConfig(
 # 'click' is Python tool for making clean CLIs
 @click.command(context_settings=config.CLICK_CONTEXT_SETTINGS['help_options'])
 @click.argument('output_type', required=True)
-@click.argument('how_many', required=False, default=1)
-@click.option('-n', '--number-rolls', default=5,
+@click.option('-n', '--how-many', 'how_many', default=1)
+@click.option('-r', '--number-rolls', default=5,
               help="Number of times you want to roll the dice.")
-@click.option('-N', '--number-dice', default=5,
+@click.option('-d', '--number-dice', default=5,
               help="Number of dice you want to roll.")
 @click.option('-l', '--password-length', default=20,
               help="Password length: default 20. "
                    "Enter number for `mixed` or `numbers` type.")
-def generate_password(number_rolls, number_dice,
+def generate_password(number_rolls=5, number_dice=5,
                       how_many=1, output_type='words',
                       password_length=20):
     """
@@ -79,6 +79,9 @@ def generate_password(number_rolls, number_dice,
         password_length: (optional) length of output type
     """
 
+    # TODO: number of rolls = number of words
+    # TODO: number of dice determine which word list
+
     # roc = "Not connected to Random.org API client..."
     chars = config.CHARACTERS
 
@@ -90,7 +93,7 @@ def generate_password(number_rolls, number_dice,
 
     if output_type == 'words':
 
-        if number_rolls == 4:
+        if number_dice == 4:
             word_list = config.WORDLIST_SHORT
             logging.info(
                 '[{0}] Using short word list...'.format(utils.get_timestamp()))
@@ -141,7 +144,10 @@ def generate_password(number_rolls, number_dice,
         chars = '1234567890'
 
     else:
-        # data_type is 'mixed'
+        logging.info(
+            '[{0}] Output type `mixed` selected...'.format(
+                utils.get_timestamp())
+        )
         click.echo(chars)
 
     if password_length < 20:
@@ -163,8 +169,8 @@ def generate_password(number_rolls, number_dice,
 def _prepare_chunks(number_rolls, number_dice):
 
     number_list = _roll_dice(number_rolls, number_dice)
-    number_rolls = _validate_count(number_rolls)
-    chunks = list(_chunks(number_list, number_rolls))
+    number_dice = _validate_count(number_dice)
+    chunks = list(_chunks(number_list, number_dice))
 
     if config.DEBUG is True:
         logging.info('[{0}] Chunked list:\n  {1}'.format(
@@ -252,7 +258,7 @@ def _chunks(input_list, size):
 def _validate_count(value):
     """
     Validate that count is 4 or 5, because EFF lists
-    only work for these numbers rolls.
+    only work for these number of dice.
 
     :param value: value to validate
     :return: value after it's validated
@@ -261,7 +267,7 @@ def _validate_count(value):
     # Use `set` ({x, y, z}) here for quickest result
     if value not in {4, 5}:
         raise click.BadParameter(
-            'Word list limitation means that dice rolls can only be 4 or 5.'
+            'Words in word lists limit number of dice to 4 or 5.'
         )
 
     return value
