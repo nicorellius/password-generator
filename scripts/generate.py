@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 """
-Dice Roll Optional, Mostly-Random Word, Number, and Mixed Password Generator
+Dice Roll Optional, Mostly-Random Word, Number, and Mixed Character 
+Password Generator
 
 [[...DROMoR WoNuM PaG...]]
 
@@ -48,7 +49,7 @@ logging.basicConfig(
 )
 
 
-# 'click' is Python tool for making clean CLIs
+# 'Click' is Python tool for making clean CLIs
 @click.command(context_settings=config.CLICK_CONTEXT_SETTINGS['help_options'])
 @click.argument('output_type', required=True)
 @click.option('-n', '--how-many', 'how_many', default=1)
@@ -84,11 +85,9 @@ def generate_password(number_rolls=5, number_dice=5,
 
     # roc = "Not connected to Random.org API client..."
     chars = config.CHARACTERS
-
     factor = 1
     api_max_length = 20
     result = []
-
     roc = utils.get_roc()
 
     if output_type == 'words':
@@ -97,14 +96,12 @@ def generate_password(number_rolls=5, number_dice=5,
             word_list = config.WORDLIST_SHORT
             logging.info(
                 '[{0}] Using short word list...'.format(utils.get_timestamp()))
-
         else:
             word_list = config.WORDLIST_LONG
             logging.info(
                 '[{0}] Using long word list...'.format(utils.get_timestamp()))
 
         chunked_list = _prepare_chunks(number_rolls, number_dice)
-
         result, password_length = _match_numbers_words(word_list, chunked_list)
 
     elif output_type == 'numbers':
@@ -122,15 +119,13 @@ def generate_password(number_rolls=5, number_dice=5,
         )
 
     if output_type != 'words':
-        
+
         if password_length <= 20:
             result = ''.join(roc.generate_strings(factor * how_many,
                                                   password_length, chars))
-
         elif password_length > 20:
             result = _concatenate_remainder(roc, chars, password_length,
                                             how_many, api_max_length)
-
     else:
         result = result
 
@@ -252,7 +247,6 @@ def _roll_dice(number_rolls=5, number_dice=5, number_sides=6):
         roc = utils.get_roc()
         return roc.generate_integers(number_rolls * number_dice, 1,
                                      number_sides)
-
     except (ValueError, AttributeError) as e:
         print(e)
 
@@ -289,7 +283,4 @@ def _validate_count(value):
 
 # Main call to command line function
 if __name__ == '__main__':
-
-    # options = ['', 'words', 'mixed', 'numbers']
-
     generate_password()
