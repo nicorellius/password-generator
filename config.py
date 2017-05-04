@@ -3,7 +3,7 @@ Password Generator configuration
 """
 
 import os
-import logging
+# import logging
 
 DEBUG = True
 
