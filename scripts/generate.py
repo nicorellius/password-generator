@@ -50,16 +50,18 @@ logging.basicConfig(
 
 
 # 'Click' is Python tool for making clean CLIs
-@click.command(context_settings=config.CLICK_CONTEXT_SETTINGS['help_options'])
-@click.argument('output_type', required=True)
-@click.option('-n', '--how-many', 'how_many', default=1)
-@click.option('-r', '--number-rolls', default=5,
-              help="Number of times you want to roll the dice.")
-@click.option('-d', '--number-dice', default=5,
-              help="Number of dice you want to roll.")
-@click.option('-l', '--password-length', default=20,
-              help="Password length: default 20. "
-                   "Enter number for `mixed` or `numbers` type.")
+# @click.command(context_settings=config.CLICK_CONTEXT_SETTINGS['help_options'])
+# @click.argument('output_type', required=True)
+# @click.option('-n', '--how-many', 'how_many', default=1)
+# @click.option('-r', '--number-rolls', default=5,
+#               help="Number of times you want to roll the dice.\n"
+#                    "Equates to how many words will be in the\n"
+#                    "`words` output type passphrase")
+# @click.option('-d', '--number-dice', default=5,
+#               help="Number of dice you want to roll.")
+# @click.option('-l', '--password-length', default=20,
+#               help="Password length: default 20. "
+#                    "Enter number for `mixed` or `numbers` type.")
 def generate_password(number_rolls=5, number_dice=5,
                       how_many=1, output_type='words',
                       password_length=20):
@@ -130,6 +132,8 @@ def generate_password(number_rolls=5, number_dice=5,
         result = result
 
     click.echo('\nYour password is: {0}'.format(result))
+
+    return result
 
 
 def _match_numbers_words(wd_list, ch_list):
