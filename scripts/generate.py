@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
 """
+PyPass3
+
 Dice Roll Optional, Mostly-Random Word, Number, and Mixed Character 
 Password Generator
-
-[[...DROMoR WoNuM PaG...]]
 
 MIT License
 
@@ -62,9 +62,9 @@ logging.basicConfig(
 # @click.option('-l', '--password-length', default=20,
 #               help="Password length: default 20. "
 #                    "Enter number for `mixed` or `numbers` type.")
-def generate_password(number_rolls=5, number_dice=5,
-                      how_many=1, output_type='words',
-                      password_length=20):
+def generate_secret(number_rolls: int = 5, number_dice: int =5,
+                    how_many: int = 1, output_type: str = 'words',
+                    password_length: int = 20):
     """
     Generate a password or passphrase with either random characters,
     words, or numbers. Optionally, choose number of dice rolls
@@ -85,7 +85,6 @@ def generate_password(number_rolls=5, number_dice=5,
     # TODO: number of rolls = number of words
     # TODO: number of dice determine which word list
 
-    # roc = "Not connected to Random.org API client..."
     chars = config.CHARACTERS
     factor = 1
     api_max_length = 20
@@ -198,7 +197,7 @@ def _concatenate_remainder(roc, chars, pw_len,
                            how_many=1, max_length=20):
     """
     API limitation is 20 character string, so if CLI input is longer
-    than 20 characters, we must concatenate the string in size of reminder.
+    than 20 characters, we must concatenate the string and reminder string.
 
     :param roc: instance of RandomOrgClient
     :param chars: character set to use for making secret
@@ -208,7 +207,6 @@ def _concatenate_remainder(roc, chars, pw_len,
     :return: concatenated string
     """
 
-    # TODO: Current bug, throws error from API on 40, 60, 80, 100 ...
     remainder_str, factor_str = '', ''
 
     # TODO: why int is required in outer scope?
@@ -287,4 +285,4 @@ def _validate_count(value):
 
 # Main call to command line function
 if __name__ == '__main__':
-    generate_password()
+    generate_secret()
