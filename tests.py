@@ -6,7 +6,7 @@ import pytest
 
 from click.testing import CliRunner
 
-from scripts.generate import generate_password
+from scripts.generate import generate_secret
 from scripts.generate import (
     _validate_count, _roll_dice, _concatenate_remainder,
     _prepare_chunks, _chunks
@@ -52,7 +52,7 @@ def test__concatenate_remainder_thirty_chars():
 
 def test__generate_password_mixed_default():
 
-    result = runner.invoke(generate_password, ['mixed'])
+    result = runner.invoke(generate_secret, ['mixed'])
     tmp_pw = result.output
 
     assert result.exit_code == 0
@@ -63,7 +63,7 @@ def test__generate_password_mixed_default():
 
 def test__generate_password_numbers_default():
 
-    result = runner.invoke(generate_password, ['numbers'])
+    result = runner.invoke(generate_secret, ['numbers'])
     tmp_pw = result.output
 
     assert result.exit_code == 0
@@ -74,7 +74,7 @@ def test__generate_password_numbers_default():
 
 def test__generate_password_default():
 
-    result = runner.invoke(generate_password, ['words'])
+    result = runner.invoke(generate_secret, ['words'])
 
     assert result.exit_code == 0
     assert result.output is not None
@@ -83,7 +83,7 @@ def test__generate_password_default():
 
 def test__generate_password_short_list_four_words():
 
-    result = runner.invoke(generate_password, ['words',
+    result = runner.invoke(generate_secret, ['words',
                                                '--how-many', 1,
                                                '--number-rolls', 4,
                                                '--number-dice', 4])
@@ -94,7 +94,7 @@ def test__generate_password_short_list_four_words():
 
 def test__generate_password_long_list_five_words():
 
-    result = runner.invoke(generate_password, ['words',
+    result = runner.invoke(generate_secret, ['words',
                                                '--how-many', 1,
                                                '--number-rolls', 5,
                                                '--number-dice', 5])
@@ -105,7 +105,7 @@ def test__generate_password_long_list_five_words():
 
 def test__generate_password_short_list_five_words():
 
-    result = runner.invoke(generate_password, ['words',
+    result = runner.invoke(generate_secret, ['words',
                                                '--how-many', 1,
                                                '--number-rolls', 4,
                                                '--number-dice', 5])
@@ -116,7 +116,7 @@ def test__generate_password_short_list_five_words():
 
 def test__generate_password_long_list_four_words():
 
-    result = runner.invoke(generate_password, ['words',
+    result = runner.invoke(generate_secret, ['words',
                                                '--how-many', 1,
                                                '--number-rolls', 5,
                                                '--number-dice', 4])
