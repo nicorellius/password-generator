@@ -49,6 +49,10 @@ logging.basicConfig(
 )
 
 
+# TODO: in order for tests to pass, the click decorators must be uncommented
+# TODO: Commenting the click decorators is needed for GUI to work
+
+
 # 'Click' is Python tool for making clean CLIs
 # @click.command(context_settings=config.CLICK_CONTEXT_SETTINGS['help_options'])
 # @click.argument('output_type', required=True)
