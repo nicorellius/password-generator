@@ -1,4 +1,15 @@
+import sys
+from cx_Freeze import Executable
+
 from setuptools import setup, find_packages
+
+# Borrowed from:
+#   http://cx-freeze.readthedocs.io/en/latest/distutils.html#distutils
+# build_exe_options = {}
+
+base = None
+if sys.platform == "win32":
+    base = "Win32GUI"
 
 setup(
     name='password-generator',
@@ -15,10 +26,14 @@ setup(
         generate=scripts.generate:cli
     """,
 
+    # options={"build_exe": build_exe_options},
+    executables=[Executable("generate-password.py", base=base)],
+
     # Metadata for upload to PyPI
     author='Nick Vincent-Maloney (nicorellius)',
     author_email='nick@cistech.io',
-    description="""Dice Roll Optional, Mostly-Random Word, Number, 
+    description="""PyPass3: Password Generator GUI.
+        Dice Roll Optional, Mostly-Random Word, Number,
         and Mixed Character Password Generator""",
     license='MIT',
     keywords='password passphrase numbers words mixed eff dice roll',
