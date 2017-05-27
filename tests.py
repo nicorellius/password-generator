@@ -50,7 +50,7 @@ def test__concatenate_remainder_thirty_chars():
     assert len(tmp_pw) == 30
 
 
-def test__generate_password_mixed_default():
+def test__generate_secret_mixed_default():
 
     result = runner.invoke(generate_secret, ['mixed'])
     tmp_pw = result.output
@@ -61,7 +61,7 @@ def test__generate_password_mixed_default():
     assert len(tmp_pw.split()) == 4
 
 
-def test__generate_password_numbers_default():
+def test__generate_secret_numbers_default():
 
     result = runner.invoke(generate_secret, ['numbers'])
     tmp_pw = result.output
@@ -72,7 +72,7 @@ def test__generate_password_numbers_default():
     assert len(tmp_pw.split()) == 4
 
 
-def test__generate_password_default():
+def test__generate_secret_default():
 
     result = runner.invoke(generate_secret, ['words'])
 
@@ -81,7 +81,7 @@ def test__generate_password_default():
     assert len(result.output.split()) == 8
 
 
-def test__generate_password_short_list_four_words():
+def test__generate_secret_short_list_four_words():
 
     result = runner.invoke(generate_secret, ['words',
                                                '--how-many', 1,
@@ -92,7 +92,7 @@ def test__generate_password_short_list_four_words():
     assert len(result.output.split()) == 7
 
 
-def test__generate_password_long_list_five_words():
+def test__generate_secret_long_list_five_words():
 
     result = runner.invoke(generate_secret, ['words',
                                                '--how-many', 1,
@@ -103,7 +103,7 @@ def test__generate_password_long_list_five_words():
     assert len(result.output.split()) == 8
 
 
-def test__generate_password_short_list_five_words():
+def test__generate_secret_short_list_five_words():
 
     result = runner.invoke(generate_secret, ['words',
                                                '--how-many', 1,
@@ -114,7 +114,7 @@ def test__generate_password_short_list_five_words():
     assert len(result.output.split()) == 7
 
 
-def test__generate_password_long_list_four_words():
+def test__generate_secret_long_list_four_words():
 
     result = runner.invoke(generate_secret, ['words',
                                                '--how-many', 1,

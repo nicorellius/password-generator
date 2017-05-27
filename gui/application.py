@@ -328,12 +328,12 @@ class ApplicationWindow(QMainWindow):
 
         message = QMessageBox(self)
 
-        with open('../assets/help.txt', 'r') as help_text:
+        with open('../assets/help/_main.txt', 'r') as help_text:
             message.setText(help_text.read())
 
         message.setIcon(QMessageBox.Question)
 
-        with open('../assets/help_inform.txt', 'r') as help_inform:
+        with open('../assets/help/_inform.txt', 'r') as help_inform:
             message.setInformativeText(help_inform.read())
 
         message.setWindowTitle('PyPass3 Help')
