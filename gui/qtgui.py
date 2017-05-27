@@ -6,7 +6,7 @@ import sys
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-from scripts.generate import generate_password
+from scripts.generate import generate_secret
 
 
 def window():
@@ -20,7 +20,7 @@ def window():
     rolls_label = QLabel(w)
 
     # def run_generate():
-    #     return generate_password()
+    #     return generate_secret()
     #
     # def on_click():
     #     return textbox.setText(run_generate())
@@ -53,7 +53,7 @@ def window():
 
         print(arg)
 
-        result = generate_password(str(arg))
+        result = generate_secret(str(arg))
 
         print(result)
 

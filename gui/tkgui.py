@@ -2,7 +2,7 @@
 
 import tkinter as tk
 
-from scripts.generate import generate_password
+from scripts.generate import generate_secret
 
 
 class Application(tk.Tk):
@@ -25,7 +25,7 @@ class Application(tk.Tk):
 
         quit_button = tk.Button(self, text='Quit', command=self.quit)
         generate_btn = tk.Button(self, text='Generate',
-                                 command=generate_password)
+                                 command=generate_secret)
 
         v = tk.StringVar()
         v.set("Words")
