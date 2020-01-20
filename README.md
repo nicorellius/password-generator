@@ -1,6 +1,6 @@
 # password-generator
 
-`PyPass3`
+This repository represents the core password generator functionality for the repository, `PyPass3`: https://bitbucket.org/nicorellius/pypass3/
 
 Dice Roll Optional, Mostly-Random Word, Number, and Mixed Password Generator
 
